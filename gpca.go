@@ -12,14 +12,11 @@ type Standard struct {
     Content string `json:"content"`
 }
 
-func handleRequest() {
+func main(){
+    fmt.Println("GPCA v0.0.1")
+
     router := mux.NewRouter().StrictSlash(true)
     router.HandleFunc("/", home) // TODO: change these to a class with functions
-    router.HandleFunc("/verify", verify)
+    router.HandleFunc("/verify", verify).Methods("POST")
     log.Fatal(http.ListenAndServe(":10000", router))
-}
-
-func main(){
-    fmt.Println("GPCA")
-    handleRequest()
 }
