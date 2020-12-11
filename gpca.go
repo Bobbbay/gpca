@@ -17,6 +17,6 @@ func main(){
 
     router := mux.NewRouter().StrictSlash(true)
     router.HandleFunc("/", home) // TODO: change these to a class with functions
-    router.HandleFunc("/verify", verify).Methods("POST")
+    router.HandleFunc("/verify", verify).Methods("POST") // TODO: Throw better error at unknown method
     log.Fatal(http.ListenAndServe(":10000", router))
 }
