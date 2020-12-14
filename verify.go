@@ -5,6 +5,7 @@ import (
     "encoding/json"
     "net/http"
     "strconv"
+    "os"
 )
 
 type ReturnCode struct { // TODO: refactor for better name
@@ -23,10 +24,11 @@ func verify(w http.ResponseWriter, r *http.Request) {
     }
     code := r.FormValue("code")
 
-    if len(code) > 5 {
+    if len(code) == 64 {
         // Convert `code` to int, and return if it works
         if _, err := strconv.Atoi(code[:5]); err == nil {
-            // TODO: Link to database to update at this point
+            // BIG TODO: Link to database to update at this point
+
             json.NewEncoder(w).Encode( ReturnCode{
                 Response: "success",
                 ErrorCode: "200",
@@ -35,12 +37,12 @@ func verify(w http.ResponseWriter, r *http.Request) {
             json.NewEncoder(w).Encode( ReturnCode{
                 Response: "fail",
                 ErrorCode: "GPCA.02",
-                Description: "Error .02 code-invalid"})
+                Description: "Error .02 non-valid-block"})
         }
     } else {
         json.NewEncoder(w).Encode( ReturnCode{
             Response: "fail",
             ErrorCode: "GPCA.01",
-            Description: "Error .01 less-than-6"})
+            Description: "Error .01 not-a-sum"})
     }
 }
