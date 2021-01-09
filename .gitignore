@@ -1,2 +1,4 @@
 Session.vim
 .undodir/
+tests
+gpca.db
