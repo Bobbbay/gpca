@@ -8,7 +8,7 @@ import (
     _ "github.com/mattn/go-sqlite3"
 )
 
-func newEntry(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Hit on update")
 
     // Parse form for `name` and `key` values (/new?name=x&points=y&cryptocurrency=z)
@@ -21,19 +21,14 @@ func newEntry(w http.ResponseWriter, r *http.Request) {
     points := r.FormValue("points")
     cryptocurrency := r.FormValue("cryptocurrency")
 
+    // BIG TODO: Link to database to update at this point
     database, err := sql.Open("sqlite3", "./gpca.db")
     if err != nil { fmt.Fprintf(w, "Error opening database: %v", err) }
 
-    // people database: id (key), name (str), points (int), cryptocurrency (string/json)
-    statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, points INTEGER, cryptocurrency TEXT)")
-    if err != nil { fmt.Fprintf(w, "Error initializing database: %v", err) }
-
-    statement.Exec()
-
-    statement, err = database.Prepare("INSERT INTO people (name, points, cryptocurrency) VALUES (?, ?, ?)")
+    statement, err := database.Prepare("UPDATE people SET name = '" + name + "', points = " + points + ", cryptocurrency = '" + cryptocurrency + "' WHERE name = '" + name + "'")
     if err != nil { fmt.Println("Error modifying database:", err) }
 
-    statement.Exec(name, points, cryptocurrency)
+    statement.Exec()
 
     json.NewEncoder(w).Encode( ReturnCode{
         Response: "success",

@@ -36,7 +36,7 @@ func status(w http.ResponseWriter, r *http.Request) {
         }
 
     case "POST":
-        // Parse form for `name` and `key` values (/update?name=x&key=y)
+        // Parse form for `name` and `key` values (/status?name=x&key=y)
         if err := r.ParseForm(); err != nil {
             fmt.Fprintf(w, "ParseForm() err: %v", err)
             return

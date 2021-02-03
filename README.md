@@ -9,13 +9,17 @@ This is the official Greg Points API.
     <summary>Click to expand</summary>
     <br/>
 
-| Endpoint  | Method | Values | Description                                                                                                                                             |
-|-----------|--------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/`       | `GET`  |                                    | Return a greeting message.                                                                                                  |
-| `/status` | `GET`  |                                    | Get the status of the whole team's points; the leaderboard.                                                                 |
-| `/status` | `POST` | `name`                             | Get the status of the `name` value's entry.                                                                                 |
-| `/verify` | `POST` | `code`                             | Check if the `code` is a valid hash; if so, return a response code of 200. Else, diagnose and return a GPCA. response.\*    |
-| `/new`    | `POST` | `name`, `points`, `cryptocurrency` | Create a new entry with the `name`, `points`, and `cryptocurrency` values. \*                                               |
+| Endpoint                   | Method | Values                             | Description                                                                                                                 |
+|----------------------------|--------|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `/`                        | `GET`  |                                    | Return a greeting message.                                                                                                  |
+| `/status`                  | `GET`  |                                    | Get the status of the whole team's points; the leaderboard.                                                                 |
+| `/status`                  | `POST` | `name`                             | Get the status of the `name` value's entry.                                                                                 |
+| `/verify`                  | `POST` | `code`                             | Check if the `code` is a valid hash; if so, return a response code of 200. Else, diagnose and return a GPCA. response.\*    |
+| `/new`                     | `POST` | `name`, `points`, `cryptocurrency` | Create a new entry with the `name`, `points`, and `cryptocurrency` values. \*                                               |
+| `/update`                  | `POST` | `name`, `points`, `cryptocurrency` | Update a given entry.                                                                                                       |
+| `/status/cryptocurrency`   | `GET`  |                                    | Responds with the status of the cryptocurrency.                                                                             |
+| `/cryptocurrency/status`   | `GET`  |                                    | Responds with the status of the cryptocurrency.                                                                             |
+| `/cryptocurrency/claim`    | `POST` | `name`, `hash`                     | Claim cryptocurrency to a user.                                                                                             |
 
 \* Refer to [GPCA. responses](#gpca-responses) for more details.
 
