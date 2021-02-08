@@ -12,6 +12,11 @@ import (
     _ "github.com/mattn/go-sqlite3"
 )
 
+// This file contains all functions and routes related to the
+// cryptocurrency aspect of Greg Points. It's the home of a
+// handful of functions, with the goal of integrating the
+// crypto aspect of the project.
+
 func modifyCryptocurrency(difference int) {
     database, err := sql.Open("sqlite3", "./gpca.db")
     if err != nil { fmt.Printf("Error opening database: %v\n", err) }

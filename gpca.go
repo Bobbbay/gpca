@@ -8,6 +8,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Welcome to GPCA: Greg Points Currency API.
+// In this file, you'll find all the routes
+// used in the project. As you browse through
+// the project, you'll notice different commented
+// areas. They are yours to look into.
+
+// May the Greg Points begin.
+
 func main(){
     fmt.Println("Welcome to GPCA with love.")
 

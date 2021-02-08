@@ -1,5 +1,9 @@
 package main
 
+// In this file, you'll find all the structs used throughout the
+// project. They're a great reference point to go if you don't
+// understand precisely what one block of code is meant to do.
+
 type Standard struct {
     Content string `json:"content"`
 }

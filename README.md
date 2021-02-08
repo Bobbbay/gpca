@@ -66,8 +66,6 @@ You can also build a binary file. Binary files are provided in the releases alre
 go build .
 ```
 
-You'll find your binary file in `./ca`.
-
 ### Running the unit tests
 
 You'll find that the package is equipped with a handful of unit tests, at your service. One may run them with a simple:
@@ -86,5 +84,4 @@ Considering the API is already running (defaulted to `localhost:10000`).
 
 ### Notes & Credits
 
- - Greg Milligan for the initial inspiration based off of the Hogwarts Points system
- - Nick Kerstens, Margaret Ho and all other Mentors, Teachers, or Professors for the encouragment and ideation
+ - All Mentors, Teachers, or Professors for the encouragment and ideation of Greg Points.

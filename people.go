@@ -8,6 +8,10 @@ import (
     _ "github.com/mattn/go-sqlite3"
 )
 
+// This file contains functions and routes regarding people
+// and entries in the database. Focusing on the informational
+// aspect, it provides a place for many common routes to live.
+
 func newPerson(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Hit on update")
 
