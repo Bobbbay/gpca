@@ -14,17 +14,17 @@ import (
 
 func modifyCryptocurrency(difference int) {
     database, err := sql.Open("sqlite3", "./gpca.db")
-    if err != nil { fmt.Println("Error opening database: %v", err) }
+    if err != nil { fmt.Printf("Error opening database: %v\n", err) }
 
     statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS cryptocurrency (date TEXT, points INTEGER)")
-    if err != nil { fmt.Println("Error initializing database: %v", err) }
+    if err != nil { fmt.Printf("Error initializing database: %v\n", err) }
 
     statement.Exec()
 
     var date string
     var points int
     rows, err := database.Query("SELECT * FROM cryptocurrency ORDER BY date DESC LIMIT 1")
-    if err != nil { fmt.Println("Error initializing database: %v", err) }
+    if err != nil { fmt.Printf("Error initializing database: %v\n", err) }
     for rows.Next() {
         rows.Scan(&date, &points)
     }
@@ -155,4 +155,37 @@ func cryptocurrencyStatus(w http.ResponseWriter, r *http.Request) {
 
 func setupCORS(w *http.ResponseWriter) {
     (*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
+
+func verifyCryptocurrency(w http.ResponseWriter, r *http.Request) {
+    fmt.Println("Hit on verify")
+
+    // Parse form for `code` value (/verify?code=x)
+    if err := r.ParseForm(); err != nil {
+        fmt.Fprintf(w, "ParseForm() err: %v", err)
+        return
+    }
+    // For TODOs, see update.go
+    code := r.FormValue("code")
+
+    if len(code) == 64 {
+        // Convert `code` to int, and return if it works
+        if _, err := strconv.Atoi(code[:5]); err == nil {
+                json.NewEncoder(w).Encode( ReturnCode{
+                Response: "success",
+                ErrorCode: "200",
+                Description: "Error 200 OK"})
+        } else {
+            json.NewEncoder(w).Encode( ReturnCode{
+                Response: "fail",
+                ErrorCode: "GPCA.02",
+                Description: "Error .02 non-valid-block"})
+        }
+    } else {
+        json.NewEncoder(w).Encode( ReturnCode{
+            Response: "fail",
+            ErrorCode: "GPCA.01",
+            Description: "Error .01 not-a-sum"})
+    }
 }
