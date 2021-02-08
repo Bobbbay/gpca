@@ -15,29 +15,27 @@ import (
 func newPerson(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Hit on update")
 
-    // Parse form for `name` and `key` values (/new?name=x&points=y&cryptocurrency=z)
     if err := r.ParseForm(); err != nil {
         fmt.Fprintf(w, "ParseForm() err: %v", err)
         return
     }
-    // TODO: Keep these values in a beautiful struct, e.x. request.name
+
+    username := r.FormValue("username")
     name := r.FormValue("name")
-    points := r.FormValue("points")
-    cryptocurrency := r.FormValue("cryptocurrency")
+    permissions := r.FormValue("permissions")
 
     database, err := sql.Open("sqlite3", "./gpca.db")
     if err != nil { fmt.Fprintf(w, "Error opening database: %v", err) }
 
-    // people database: id (key), name (str), points (int), cryptocurrency (string/json)
-    statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, name TEXT, points INTEGER, cryptocurrency TEXT)")
+    statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY, username TEXT, name TEXT, permissions TEXT, points INTEGER, cryptocurrency TEXT)")
     if err != nil { fmt.Fprintf(w, "Error initializing database: %v", err) }
 
     statement.Exec()
 
-    statement, err = database.Prepare("INSERT INTO people (name, points, cryptocurrency) VALUES (?, ?, ?)")
+    statement, err = database.Prepare("INSERT INTO people (username, name, permissions, points, cryptocurrency) VALUES (?, ?, ?, ?, ?)")
     if err != nil { fmt.Println("Error modifying database:", err) }
 
-    statement.Exec(name, points, cryptocurrency)
+    statement.Exec(username, name, permissions, 0, 0)
 
     json.NewEncoder(w).Encode( ReturnCode{
         Response: "success",
@@ -48,21 +46,34 @@ func newPerson(w http.ResponseWriter, r *http.Request) {
 func update(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Hit on update")
 
-    // Parse form for `name` and `key` values (/new?name=x&points=y&cryptocurrency=z)
     if err := r.ParseForm(); err != nil {
         fmt.Fprintf(w, "ParseForm() err: %v", err)
         return
     }
-    // TODO: Keep these values in a beautiful struct, e.x. request.name
-    name := r.FormValue("name")
-    points := r.FormValue("points")
-    cryptocurrency := r.FormValue("cryptocurrency")
 
-    // BIG TODO: Link to database to update at this point
     database, err := sql.Open("sqlite3", "./gpca.db")
     if err != nil { fmt.Fprintf(w, "Error opening database: %v", err) }
 
-    statement, err := database.Prepare("UPDATE people SET name = '" + name + "', points = " + points + ", cryptocurrency = '" + cryptocurrency + "' WHERE name = '" + name + "'")
+    rows, err := database.Query("SELECT username, name, permissions, points, cryptocurrency FROM people")
+    if err != nil { fmt.Fprintf(w, "Error initializing database: %v", err) }
+
+    var username string
+    var name string
+    var permissions string
+    var points string
+    var cryptocurrency string
+
+    for rows.Next() {
+        rows.Scan(&username, &name, &permissions, &points, &cryptocurrency)
+    }
+
+    if (len(r.FormValue("username")) > 0) { username = r.FormValue("username") }
+    if (len(r.FormValue("name")) > 0) { name = r.FormValue("name") }
+    if (len(r.FormValue("permissions")) > 0) { permissions = r.FormValue("permissions") }
+    if (len(r.FormValue("points")) > 0) { points = r.FormValue("points") }
+    if (len(r.FormValue("cryptocurrency")) > 0) { cryptocurrency = r.FormValue("cryptocurrency") }
+
+    statement, err := database.Prepare("UPDATE people SET name = '" + name + "', points = " + points + ", cryptocurrency = '" + cryptocurrency + "' WHERE username = '" + username + "'")
     if err != nil { fmt.Println("Error modifying database:", err) }
 
     statement.Exec()
@@ -73,3 +84,76 @@ func update(w http.ResponseWriter, r *http.Request) {
         Description: "Error 200 OK"})
 }
 
+func status(w http.ResponseWriter, r *http.Request) {
+    fmt.Println("Hit on status")
+    setupCORS(&w)
+
+    database, err := sql.Open("sqlite3", "./gpca.db")
+    if err != nil { fmt.Fprintf(w, "Error opening database: %v", err) }
+
+    rows, err := database.Query("SELECT id, username, name, permissions, points, cryptocurrency FROM people")
+    if err != nil { fmt.Fprintf(w, "Error initializing database: %v", err) }
+
+    switch r.Method {
+    case "GET":
+        var id int
+        var username string
+        var name string
+        var permissions string
+        var points int
+        var cryptocurrency string
+
+        // lol
+
+        fmt.Fprintf(w, "{\n")
+
+        for rows.Next() {
+            rows.Scan(&id, &username, &name, &permissions, &points, &cryptocurrency)
+            if (id > 1) { fmt.Fprintf(w, ",\"" + username + "\": ") } else { fmt.Fprintf(w, "\"" + username + "\": ") }
+            json.NewEncoder(w).Encode( Person{
+                Id: id,
+                Username: username,
+                Name: name,
+                Permissions: permissions,
+                Points: points,
+                Cryptocurrency: cryptocurrency})
+        }
+
+        fmt.Fprintf(w, "}")
+
+    case "POST":
+        if err := r.ParseForm(); err != nil {
+            fmt.Fprintf(w, "ParseForm() err: %v", err)
+            return
+        }
+
+        username := r.FormValue("username")
+
+        rows, err := database.Query("SELECT id, name, permissions, points, cryptocurrency FROM people WHERE username = " + username)
+        if err != nil { fmt.Fprintf(w, "Error initializing database: %v", err) }
+
+        var id int
+        var name string
+        var permissions string
+        var points int
+        var cryptocurrency string
+
+        for rows.Next() {
+            rows.Scan(&id, &name, &name)
+            json.NewEncoder(w).Encode( Person{
+                Id: id,
+                Username: username,
+                Name: name,
+                Permissions: permissions,
+                Points: points,
+                Cryptocurrency: cryptocurrency})
+        }
+
+        json.NewEncoder(w).Encode( ReturnCode{
+            Response: "success",
+            ErrorCode: "200",
+            Description: "Error 200 OK"})
+    default:
+        // TODO: Return error
+    }
+}

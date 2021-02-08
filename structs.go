@@ -16,10 +16,11 @@ type ReturnCode struct {
 }
 
 type Person struct {
-    // id INTEGER PRIMARY KEY, name TEXT, points INTEGER, cryptocurrency TEXT)
-    Id int `json:"id"`
-    Name string `json:"name"`
-    Points int `json:"points"`
+    Id          int     `json:"id"`
+    Username    string  `json:"username"`
+    Permissions string `json:"permissions"`
+    Name        string  `json:"name"`
+    Points      int     `json:"points"`
     Cryptocurrency string `json:"cryptocurrency"`
 }
 
